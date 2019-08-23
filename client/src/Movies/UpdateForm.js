@@ -13,29 +13,29 @@ const UpdateForm = props => {
 
     useEffect(() => {
        fetchMovie(props.match.params.id); 
-    }, []);
+    }, [props.match.params.id]);
 
     const changeHandler = event => {
-        event.persist();
-        let value = event.target.value;
-        if (event.target.name === 'title') {
-            value = parseInt(value, 10);
-        }
 
         setMovie({
             ...movie,
-            [event.target.name]: value
+            [event.target.name]: event.target.value
         });
     };
 
     const handleSubmit = event => {
         event.preventDefault();
-        axios.put('https://localhost:3333/update-movie/${movie.id}', movie)
+        axios.put(`http://localhost:5000/api/movies/${movie.id}`, movie)
             .then(res => {
                 console.log(res);
-                setMovie(initialMovie);
-                props.updateMovies(res.data);
-                props.history.push('/movie-list');
+                // setMovie(initialMovie);
+                // props.updateMovies(res.data);
+                // props.history.push('/movie-list');
+                const index = props.movieList.findIndex(film => film.id === movie.id)
+
+                props.movieList[index] = movie;
+                props.updateMovieList(props.movieList);
+                props.history.push('/');
             })
             .catch(err => {
                 console.log(err.response);
