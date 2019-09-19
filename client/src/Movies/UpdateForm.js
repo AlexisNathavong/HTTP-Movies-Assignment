@@ -6,96 +6,103 @@ const initialMovie = {
     director: '',
     metascore: '',
     stars: ''
-};
+}
+
 
 const UpdateForm = props => {
-    const [movie, setMovie] = useState(initialMovie);
+    const [movie, setMovie] = useState(initialMovie)
 
     useEffect(() => {
-       fetchMovie(props.match.params.id); 
-    }, [props.match.params.id]);
+        fetchMovie(props.match.params.id)
+    }, [props.match.params.id])
 
-    const changeHandler = event => {
-
+    const handleChanges = e => {
         setMovie({
             ...movie,
-            [event.target.name]: event.target.value
+            [e.target.name]: e.target.value
         });
-    };
+    }
 
-    const handleSubmit = event => {
-        event.preventDefault();
+    const handleSubmit = e => {
+        e.preventDefault();
+        //* This is where the PUT request will be *//
         axios.put(`http://localhost:5000/api/movies/${movie.id}`, movie)
             .then(res => {
-                console.log(res);
-                // setMovie(initialMovie);
-                // props.updateMovies(res.data);
-                // props.history.push('/movie-list');
+                console.log('PUT request api', res);
                 const index = props.movieList.findIndex(film => film.id === movie.id)
 
                 props.movieList[index] = movie;
                 props.updateMovieList(props.movieList);
                 props.history.push('/');
+
             })
             .catch(err => {
-                console.log(err.response);
-            })
+                console.log('Error in PUT request', err.response)
+            });
+
     };
 
     const fetchMovie = id => {
-        axios
-          .get(`http://localhost:5000/api/movies/${id}`)
-          .then(res => setMovie(res.data))
-          .catch(err => console.log(err.response));
-      };
+        //* There is where the GET request will be */
+        axios.get(`http://localhost:5000/api/movies/${id}`)
+            .then(res => {
+                console.log('GET request', res.data);
+                setMovie(res.data);
+            })
+            .catch(err => {
+                console.log('Error in GET request', err.response)
+            })
+    }
 
     return (
         <div>
-            <h2>Update Movie</h2>
+            <h2>Updating Movie</h2>
 
             <form onSubmit={handleSubmit}>
-                <input 
-                    type="text"
-                    name="title"
-                    onChange={changeHandler}
-                    placeholder="title"
-                    value={movie.title}
+                <input
+                    type='text'
+                    name='title'
+                    placeholder='Add a title'
+                    value={movie.title} required
+                    onChange={handleChanges}
                 />
 
-                <div className="baseline">
-                    <input 
-                        type="text"
-                        name="director"
-                        onChange={changeHandler}
-                        placeholder="director"
-                        value={movie.director}
+                <div className='update-form'>
+                    <input
+                        type='text'
+                        name='director'
+                        placeholder='Add a director'
+                        value={movie.director} required
+                        onChange={handleChanges}
                     />
                 </div>
 
-                <div className="baseline">
-                    <input 
-                        type="number"
-                        name="metascore"
-                        onChange={changeHandler}
-                        placeholder="metascore"
-                        value={movie.metascore}
+                <div className='update-form'>
+                    <input
+                        type='number'
+                        name='metascore'
+                        placeholder='Add a number'
+                        value={movie.metascore} required
+                        onChange={handleChanges}
                     />
                 </div>
 
-                <div className="baseline">
-                    <input 
-                        type="text"
-                        name="stars"
-                        onChange={changeHandler}
-                        placeholder="stars"
-                        value={movie.stars}
+                <div className='update-form'>
+                    <input
+                        type='text'
+                        name='stars'
+                        placeholder='Add stars'
+                        value={movie.stars} required
+                        onChange={handleChanges}
                     />
                 </div>
 
-                <button class="form-btn">Update</button>
+                <button className='update-btn'>Update</button>
+
             </form>
         </div>
-    ) 
+
+    )
 }
 
 export default UpdateForm;
